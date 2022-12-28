@@ -1,10 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.Buffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Lox 
@@ -15,7 +13,7 @@ public class Lox
     {
         if (args.length > 1)
         {
-            System.out.println("Usage: jlox [script]")
+            System.out.println("Usage: jlox [script]");
         }
         else if (args.length == 1)
         {
@@ -49,7 +47,7 @@ public class Lox
 
     private static void run(String source) 
     {
-        var scanner = new Scanner(source)
+        var scanner = new Scanner(source);
         var tokens = scanner.scanTokens();
 
         for (Token token: tokens)

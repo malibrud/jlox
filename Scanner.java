@@ -3,8 +3,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.lang.model.util.ElementScanner14;
-
 public class Scanner {
     private final String source;
     private final List<Token> tokens = new ArrayList<>();
@@ -46,7 +44,7 @@ public class Scanner {
             start = current;
             scanToken();
         }
-        tokens.add( new Token(EOF, "", null, line));
+        tokens.add( new Token(TokenType.EOF, "", null, line));
         return tokens;
     }
 
@@ -61,10 +59,16 @@ public class Scanner {
             case '}': addToken(TokenType.RIGHT_BRACE); break;
             case ',': addToken(TokenType.COMMA); break;
             case '.': addToken(TokenType.DOT); break;
-            case '-': addToken(TokenType.MINUS); break;
-            case '+': addToken(TokenType.PLUS); break;
             case ';': addToken(TokenType.SEMICOLON); break;
-            case '*': addToken(TokenType.STAR); break;
+            case '-': 
+                addToken(match('=') ? TokenType.MINUS_EQUAL : TokenType.MINUS);
+                break;
+            case '+':
+                addToken(match('=') ? TokenType.PLUS_EQUAL : TokenType.PLUS);
+                break;
+            case '*': 
+                addToken(match('=') ? TokenType.STAR_EQUAL : TokenType.STAR);
+                break;
             case '!':
                 addToken(match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
                 break;
@@ -85,6 +89,7 @@ public class Scanner {
                 else 
                 {
                     addToken(TokenType.SLASH);
+                    addToken(match('=') ? TokenType.SLASH_EQUAL : TokenType.SLASH);
                 }
                 break;
             case '"': string(); break;
