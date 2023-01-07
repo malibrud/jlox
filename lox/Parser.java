@@ -2,22 +2,29 @@ package lox;
 
 import static lox.TokenType.*;
 
-import java.lang.reflect.AnnotatedTypeVariable;
 import java.util.List;
 
-import javax.management.modelmbean.ModelMBeanInfoSupport;
-import javax.print.event.PrintEvent;
-import javax.swing.plaf.basic.BasicLookAndFeel;
-
-import org.w3c.dom.ls.LSResourceResolver;
-
 public class Parser {
+    private static class ParseError extends RuntimeException {}
+
     private final List<Token> tokens;
     private int current = 0;
 
     Parser(List<Token> tokens)
     {
         this.tokens = tokens;
+    }
+
+    Expr parse()
+    {
+        try
+        {
+            return expression();
+        }
+        catch(ParseError error)
+        {
+            return null;
+        }
     }
 
     private Expr expression()
@@ -99,6 +106,7 @@ public class Parser {
             consume(RIGHT_PAREN, "Expect ')' after expression.");
             return new Expr.Grouping(expr);
         }
+        throw error(peek(), "Expect expression.");
     }
 
     private boolean match(TokenType... types)
@@ -152,5 +160,27 @@ public class Parser {
     {
         Lox.error(token, message);
         return new ParseError();
+    }
+
+    private void synchronize() 
+    {
+        advance();
+        while (!isAtEnd())
+        {
+            if (previous().type == SEMICOLON) return;
+            switch (peek().type)
+            {
+                case CLASS:
+                case FOR:
+                case FUN:
+                case IF:
+                case PRINT:
+                case RETURN:
+                case VAR:
+                case WHILE:
+                    return;
+            }
+            advance();
+        }
     }
 }

@@ -52,10 +52,10 @@ public class Lox
         var scanner = new Scanner(source);
         var tokens = scanner.scanTokens();
 
-        for (Token token: tokens)
-        {
-            System.out.println(token);
-        }
+        var parser = new Parser(tokens);
+        var expression = parser.parse();
+        if (hadError) return ;
+        System.out.println(new AstPrinter().print(expression));
     }
 
     static void error( int line, String message )

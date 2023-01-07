@@ -32,6 +32,7 @@ public class AstPrinter implements Expr.Visitor<String>
     {
         var builder = new StringBuilder();
         builder.append("(");
+        builder.append(name);
         for (var expr: exprs)
         {
             builder.append(" ");

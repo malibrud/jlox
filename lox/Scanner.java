@@ -91,7 +91,6 @@ public class Scanner {
                 }
                 else 
                 {
-                    addToken(TokenType.SLASH);
                     addToken(match('=') ? TokenType.SLASH_EQUAL : TokenType.SLASH);
                 }
                 break;
