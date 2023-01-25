@@ -4,8 +4,10 @@ import lox.Expr.Binary;
 import lox.Expr.Grouping;
 import lox.Expr.Literal;
 import lox.Expr.Unary;
+import lox.Expr.Variable;
 import lox.Stmt.Expression;
 import lox.Stmt.Print;
+import lox.Stmt.Var;
 
 import static lox.TokenType.*;
 
@@ -14,6 +16,8 @@ import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>
 {
+    private Environment environment = new Environment();
+
     void interpret( List<Stmt> statements )
     {
         try
@@ -165,6 +169,24 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>
         Object value = evaluate(stmt.expression);
         System.out.println(stringify(value));
         return null;
+    }
+
+    @Override
+    public Void visitVarStmt(Stmt.Var stmt) 
+    {
+        Object value = null;
+        if (stmt.initializer != null)
+        {
+            value = evaluate(stmt.initializer);
+        }
+        environment.define(stmt.name.lexeme, value);
+        return null;
+    }
+
+    @Override
+    public Object visitVariableExpr(Variable expr) 
+    {
+        return environment.get(expr.name);
     }
     
 }
