@@ -5,6 +5,7 @@ import lox.Expr.Grouping;
 import lox.Expr.Literal;
 import lox.Expr.Unary;
 import lox.Expr.Variable;
+import lox.Stmt.Block;
 import lox.Stmt.Expression;
 import lox.Stmt.Print;
 import lox.Stmt.Var;
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>
 {
-    private Environment environment = new Environment();
+    Environment environment = new Environment();
 
     void interpret( List<Stmt> statements )
     {
@@ -159,6 +160,30 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>
     }
 
     @Override
+    public Void visitBlockStmt(Stmt.Block stmt)
+    {
+        executeBlock(stmt.statements, new Environment(environment));
+        return null;
+    }
+
+    void executeBlock(List<Stmt> statements, Environment environment)
+    {
+        var previous = this.environment;
+        try
+        {
+            this.environment = environment;
+            for (Stmt statement : statements)
+            {
+                execute(statement);
+            }
+        }
+        finally
+        {
+            this.environment = previous;
+        }
+    }
+
+    @Override
     public Void visitExpressionStmt(Expression stmt) {
         evaluate(stmt.expression);
         return null;
@@ -192,9 +217,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>
     }
 
     @Override
-    public Object visitVariableExpr(Variable expr) 
-    {
+    public Object visitVariableExpr(Variable expr) {
         return environment.get(expr.name);
     }
-    
 }
